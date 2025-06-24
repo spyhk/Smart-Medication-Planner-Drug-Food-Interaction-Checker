@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>📊 Medication Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      padding: 30px;
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      max-width: 900px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+    canvas {
+      max-width: 100%;
+      margin-bottom: 40px;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    h2 {
+      margin-bottom: 10px;
+      font-size: 1.4em;
+    }
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    li {
+      padding: 6px 0;
+      font-size: 0.95em;
+    }
+    .suggestion {
+      background: #e7f9ed;
+      padding: 12px;
+      margin-top: 15px;
+      border-left: 4px solid #28a745;
+      font-size: 0.9em;
+    }
+    .tip-box {
+      background: #e2f0d9;
+      padding: 15px;
+      margin: 40px 0 20px 0;
+      border-left: 5px solid #28a745;
+      font-size: 0.95em;
+    }
+    a {
+      display: block;
+      text-align: center;
+      margin-top: 30px;
+      color: #007bff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Medication Dashboard</h1>
+
+    <!-- Chart -->
+    <canvas id="adherenceChart"></canvas>
+
+    <!-- Medication Cards with Logs -->
+    {% for med in med_logs %}
+      <div class="card">
+        <h2>{{ med.drug }}</h2>
+        <p><strong>Scheduled Time:</strong> {{ med.dose_time }} |
+           <strong>Frequency:</strong> {{ med.frequency }} |
+           <strong>Doses Logged:</strong> {{ med.taken_count }}</p>
+        
+        <ul>
+          {% if med.logs %}
+            {% for log in med.logs %}
+              <li>✔️ Taken at: {{ log }}</li>
+            {% endfor %}
+          {% else %}
+            <li>⚠️ No doses logged yet.</li>
+          {% endif %}
+        </ul>
+
+        {% if med.frequency == 'Daily' and med.logs|length < 3 %}
+          <div class="suggestion">
+            💡 <strong>Tip:</strong> Try staying consistent with <strong>{{ med.drug }}</strong>. You're missing some doses.
+          </div>
+        {% endif %}
+
+        {% if med.frequency == 'Once' and med.logs|length == 0 %}
+          <div class="suggestion">
+            💡 <strong>Tip:</strong> You haven't logged <strong>{{ med.drug }}</strong> yet. Please mark it once taken.
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <!-- Smart AI Tips -->
+    <div class="tip-box">
+      <strong>💡 AI Suggestion:</strong><br>
+      {% if med_logs %}
+        {% for med in med_logs %}
+          {% if med.taken_count == 0 %}
+            <b>{{ med.drug }}</b>: Not taken yet. Consider setting a reminder.<br>
+          {% elif med.taken_count < 3 %}
+            <b>{{ med.drug }}</b>: You’ve only logged {{ med.taken_count }} time(s). Stay consistent!<br>
+          {% else %}
+            <b>{{ med.drug }}</b>: You're doing great! 🎯<br>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        No medications to track yet. Head to the planner to get started.
+      {% endif %}
+    </div>
+
+    <a href="/planner">← Back to Planner</a>
+  </div>
+
+  <!-- Chart Rendering -->
+  <script>
+    const ctx = document.getElementById("adherenceChart").getContext("2d");
+    const chart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: {{ med_logs | map(attribute='drug') | list | safe }},
+        datasets: [{
+          label: "Doses Logged",
+          data: {{ med_logs | map(attribute='taken_count') | list | safe }},
+          backgroundColor: "#007bff",
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1 }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

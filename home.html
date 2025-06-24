@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Drug & Food Interaction Advisor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f7f8;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      font-size: 1.9em;
+      margin-bottom: 10px;
+    }
+
+    p.sub {
+      text-align: center;
+      color: #777;
+      font-size: 0.95em;
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1em;
+    }
+
+    .mic-button {
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .mic-button:hover {
+      background-color: #e2e2e2;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+
+    .planner-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .planner-link a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .planner-link a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 0.85em;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>💊 Drug & Food Interaction Advisor</h1>
+    <p class="sub">Speak or type a drug and a food item to check for any potential interactions using FDA data.</p>
+
+    <form action="/check" method="post">
+      <label for="drug">Drug Name</label>
+      <div class="input-row">
+        <input type="text" id="drug" name="drug" placeholder="e.g. Warfarin" required />
+        <button type="button" class="mic-button" onclick="startDictation('drug')" title="Speak Drug Name">🎤</button>
+      </div>
+
+      <label for="food">Food Item</label>
+      <div class="input-row">
+        <input type="text" id="food" name="food" placeholder="e.g. Spinach" required />
+        <button type="button" class="mic-button" onclick="startDictation('food')" title="Speak Food Item">🎤</button>
+      </div>
+
+      <button type="submit">Check Interaction</button>
+    </form>
+
+    <!-- ✅ Medication Planner link -->
+    <div class="planner-link">
+      <a href="/planner">📋 Open Medication Planner</a>
+    </div>
+
+    <footer>
+      🔗 Powered by FDA API | 📘 For informational use only
+    </footer>
+  </div>
+
+  <script>
+    function startDictation(fieldId) {
+      if (!('webkitSpeechRecognition' in window)) {
+        alert("Speech recognition is not supported in this browser. Please use Google Chrome.");
+        return;
+      }
+
+      const recognition = new webkitSpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = function (event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById(fieldId).value = transcript;
+      };
+
+      recognition.onerror = function (event) {
+        alert("Speech recognition error: " + event.error);
+      };
+
+      recognition.start();
+    }
+  </script>
+</body>
+</html>
