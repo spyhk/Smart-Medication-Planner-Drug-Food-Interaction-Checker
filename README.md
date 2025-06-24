@@ -97,14 +97,8 @@ B.Tech (AI & DS) | Final Year Project | 2025
 📝 License
 MIT License – Use it freely, but cite the original work if modified.
 
-yaml
-Copy code
+![Uploading image.png…]()
 
----
-
-### 📥 Want This as a File?
-
-Let me know and I can export this `README.md` as:
 
 - Plain `.md` file for GitHub
 - `.pdf` version
