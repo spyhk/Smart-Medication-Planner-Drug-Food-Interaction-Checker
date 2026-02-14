@@ -96,11 +96,6 @@ B.Tech (AI & DS) | Final Year Project | 2025
 
 📝 License
 MIT License – Use it freely, but cite the original work if modified.
-
-![Uploading image.png…]()
-
-
-- Plain `.md` file for GitHub
 - `.pdf` version
 - `.docx` documentation
 
